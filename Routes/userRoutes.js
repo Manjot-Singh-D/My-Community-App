@@ -11,6 +11,31 @@ router.get("/:id", (req, res, next) => {
     }
   });
 });
+router.patch("/updateDetails/:id", (req, res, next) => {
+  console.log(req.params.id);
+  console.log(req.body);
+  Users.updateOne(
+    { _id: req.params.id },
+    {
+      $set: {
+        name: req.body.name || "",
+        bio: req.body.bio || "",
+        Address: req.body.Address || "",
+        Website: req.body.Website || "",
+        Github: req.body.Github || "",
+        Twitter: req.body.Twitter || "",
+        Instagram: req.body.Instagram || "",
+        Facebook: req.body.Facebook || "",
+        phoneNumber: req.body.phoneNumber || "",
+        mobileNumber: req.body.mobileNumber || "",
+      },
+    },
+    (err) => {
+      if (err) res.send({ validity: false, message: "Can't update" });
+      else res.send({ validity: true, message: "User Details updated" });
+    }
+  );
+});
 router.post("/register", (req, res, next) => {
   Users.find({ email: req.body.email }, async (err, foundUser) => {
     if (foundUser.length === 0) {
@@ -90,19 +115,5 @@ router.patch("/:id/makeNewGroup", (req, res, next) => {
     }
   );
 });
-// router.patch("/:id/addToGroup", (req, res, next) => {
-//   Users.updateOne(
-//     { _id: req.params.id },
-//     {
-//       $addToSet: {
-//         myJoinedGroups: req.body,
-//       },
-//     },
-//     (err) => {
-//       if (err) res.send({ validity: false, message: "Error Occurred" });
-//       else res.send({ validity: true, message: "Successfully added to group" });
-//     }
-//   );
-// });
 
 module.exports = router;
