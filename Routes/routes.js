@@ -4,17 +4,17 @@ const Database = require("../models/Database");
 
 router.get("/:id/:type", (req, res, next) => {
   Database.find({ secret_key: req.params.id }, async (err, data) => {
-    // console.log("data : ", data);
+    console.log("data : ", data);
     if (data.length !== 0) {
       if (req.params.type === "reviews") {
-        res.status(200).send({ validity: true, data: data.allReviews });
+        res.status(200).send({ validity: true, data: data[0].allReviews });
       } else if (req.params.type === "groups") {
-        res.status(200).send({ validity: true, data: data.allGroups });
+        res.status(200).send({ validity: true, data: data[0].allGroups });
       } else {
-        res.status(500).send({ validity: false, message: "Data not found" });
+        res.status(200).send({ validity: false, message: "Data not found" });
       }
     } else {
-      res.status(500).send({ validity: false, message: "no data found" });
+      res.status(200).send({ validity: false, message: "no data found" });
     }
   });
 });
