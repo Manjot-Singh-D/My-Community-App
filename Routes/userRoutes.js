@@ -56,6 +56,10 @@ router.post("/register", (req, res, next) => {
         reviewsMade: [],
         myJoinedGroups: [],
       });
+
+      const token = await newUser.generateAuthToken();
+      res.cookie("jwt", token);
+      // console.log(cookie);
       await newUser.save();
       res.status(200).send({ validity: true, message: { id: newUser._id } });
     } else {
@@ -66,10 +70,10 @@ router.post("/register", (req, res, next) => {
   });
 });
 router.post("/login", (req, res, next) => {
-  // console.log(req.body);
   Users.findOne({ email: req.body.email }, async (err, foundUser) => {
     if (foundUser) {
-      // console.log("foundUser : ", foundUser);
+      console.log(req.get("Cookie"));
+      console.log("Cookie Set");
       if (foundUser.password === req.body.password) {
         res
           .status(200)

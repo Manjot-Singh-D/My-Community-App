@@ -3,6 +3,7 @@ const router = express.Router();
 const Database = require("../models/Database");
 
 router.get("/:id/:type", (req, res, next) => {
+  res.setHeader("Set-Cookie", "user=foundUser");
   Database.find({ secret_key: req.params.id }, async (err, data) => {
     console.log("data : ", data);
     if (data.length !== 0) {
