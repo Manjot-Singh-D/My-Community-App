@@ -40,16 +40,6 @@ userSchema.methods.generateAuthToken = async function () {
     res.send("error is : ", err);
   }
 };
-// userSchema.pre("save", async (next) => {
-//   console.log(this);
-//   // if (this.isModified("password")) {
-//   //   console.log("Current password : ", this.password);
-//   //   // this.password = await bcrypt.hash(this.password, 10);
-//   //   console.log("The current password : ", this.password);
-//   // }
-//   this.password = await bcrypt.hash(this.password, 10);
-//   next();
-// });
 
 const Users = mongoose.model("Users", userSchema);
 module.exports = Users;

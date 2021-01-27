@@ -24,20 +24,14 @@ router.get("/", async (req, res, next) => {
     res.send({ validity: false, data: "ERROR Occurred" });
   }
 });
-router.get("/logout", auth, async (req, res, next) => {
+router.get("/logout", async (req, res, next) => {
   try {
-    req.user.tokens = req.user.tokens.filter((currElement) => {
-      return currElement.token !== req.token;
-    });
     res.clearCookie("jwt");
-    await req.user.save();
   } catch (err) {
     res.status(500).send(err);
   }
 });
 router.patch("/updateDetails/:id", (req, res, next) => {
-  console.log(req.params.id);
-  console.log(req.body);
   Users.updateOne(
     { _id: req.params.id },
     {
@@ -83,9 +77,8 @@ router.post("/register", (req, res, next) => {
 
       const token = await newUser.generateAuthToken();
       res.cookie("jwt", token, {
-        expires: new Date(Date.now() + 600000),
+        expires: new Date(Date.now() + 300000),
       });
-      // console.log(cookie);
       await newUser.save();
       res.status(200).send({ validity: true, message: { id: newUser._id } });
     } else {
@@ -104,7 +97,7 @@ router.post("/login", (req, res, next) => {
       );
       const token = await foundUser.generateAuthToken();
       res.cookie("jwt", token, {
-        expires: new Date(Date.now() + 600000),
+        expires: new Date(Date.now() + 300000),
       });
       if (isMatch) {
         res
@@ -121,7 +114,6 @@ router.post("/login", (req, res, next) => {
   });
 });
 router.patch("/:id/addReview", (req, res, next) => {
-  // console.log(req.params.id);
   Users.updateOne(
     { _id: req.params.id },
     {
@@ -136,8 +128,6 @@ router.patch("/:id/addReview", (req, res, next) => {
   );
 });
 router.patch("/:id/makeNewGroup", (req, res, next) => {
-  // "req.params.id make new group patch : ", req.params.id);
-  // console.log(req.body);
   Users.updateOne(
     { _id: req.params.id },
     {
