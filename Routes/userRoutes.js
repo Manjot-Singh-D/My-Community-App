@@ -3,8 +3,9 @@ const router = express.Router();
 const Users = require("../models/Users");
 const bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth");
+const jwt = require("jsonwebtoken");
 
-router.get("/:id", auth, (req, res, next) => {
+router.get("/:id", (req, res, next) => {
   Users.findOne({ _id: req.params.id }, (err, foundUser) => {
     foundUser.password = "Don't be smart";
     res.status(200).send({ validity: true, message: foundUser });
@@ -12,6 +13,16 @@ router.get("/:id", auth, (req, res, next) => {
       res.status(204).send({ validity: false, message: "user not found" });
     }
   });
+});
+router.get("/", async (req, res, next) => {
+  try {
+    const token = req.cookies.jwt;
+    const verifyUser = jwt.verify(token, process.env.SECRET_KEY);
+    const user = await Users.findOne({ _id: verifyUser._id });
+    res.send({ validity: true, data: user._id });
+  } catch (err) {
+    res.send({ validity: false, data: "ERROR Occurred" });
+  }
 });
 router.get("/logout", auth, async (req, res, next) => {
   try {
@@ -72,7 +83,7 @@ router.post("/register", (req, res, next) => {
 
       const token = await newUser.generateAuthToken();
       res.cookie("jwt", token, {
-        expires: new Date(Date.now() + 300000),
+        expires: new Date(Date.now() + 600000),
       });
       // console.log(cookie);
       await newUser.save();
@@ -93,7 +104,7 @@ router.post("/login", (req, res, next) => {
       );
       const token = await foundUser.generateAuthToken();
       res.cookie("jwt", token, {
-        expires: new Date(Date.now() + 300000),
+        expires: new Date(Date.now() + 600000),
       });
       if (isMatch) {
         res
