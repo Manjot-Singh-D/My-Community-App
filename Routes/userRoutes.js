@@ -27,8 +27,9 @@ router.get("/", async (req, res, next) => {
 router.get("/logout", async (req, res, next) => {
   try {
     res.clearCookie("jwt");
+    res.send({ validity: true, message: "cookie cleared" });
   } catch (err) {
-    res.status(500).send(err);
+    res.status(200).send(err);
   }
 });
 router.patch("/updateDetails/:id", (req, res, next) => {
