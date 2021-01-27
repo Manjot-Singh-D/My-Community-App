@@ -2,6 +2,7 @@
     "env":{
         "DB_USER":"my_community",
         "DB_PASSWORD":"my_community",
-        "DB_NAME":"MyCommunity"
+        "DB_NAME":"MyCommunity",
+        "SECRET_KEY":"mynameismanjotsinghnsutiansecondyear"
     }
 }

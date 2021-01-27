@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Users = require("../models/Users");
+const bcrypt = require("bcryptjs");
+const auth = require("../middleware/auth");
 
-router.get("/:id", (req, res, next) => {
+router.get("/:id", auth, (req, res, next) => {
   Users.findOne({ _id: req.params.id }, (err, foundUser) => {
     foundUser.password = "Don't be smart";
     res.status(200).send({ validity: true, message: foundUser });
@@ -10,6 +12,17 @@ router.get("/:id", (req, res, next) => {
       res.status(204).send({ validity: false, message: "user not found" });
     }
   });
+});
+router.get("/logout", auth, async (req, res, next) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((currElement) => {
+      return currElement.token !== req.token;
+    });
+    res.clearCookie("jwt");
+    await req.user.save();
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 router.patch("/updateDetails/:id", (req, res, next) => {
   console.log(req.params.id);
@@ -58,7 +71,9 @@ router.post("/register", (req, res, next) => {
       });
 
       const token = await newUser.generateAuthToken();
-      res.cookie("jwt", token);
+      res.cookie("jwt", token, {
+        expires: new Date(Date.now() + 300000),
+      });
       // console.log(cookie);
       await newUser.save();
       res.status(200).send({ validity: true, message: { id: newUser._id } });
@@ -72,9 +87,15 @@ router.post("/register", (req, res, next) => {
 router.post("/login", (req, res, next) => {
   Users.findOne({ email: req.body.email }, async (err, foundUser) => {
     if (foundUser) {
-      console.log(req.get("Cookie"));
-      console.log("Cookie Set");
-      if (foundUser.password === req.body.password) {
+      const isMatch = await bcrypt.compare(
+        req.body.password,
+        foundUser.password
+      );
+      const token = await foundUser.generateAuthToken();
+      res.cookie("jwt", token, {
+        expires: new Date(Date.now() + 300000),
+      });
+      if (isMatch) {
         res
           .status(200)
           .send({ validity: true, message: { id: foundUser._id } });

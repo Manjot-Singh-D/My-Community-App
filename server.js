@@ -5,10 +5,13 @@ const userRoutes = require("./Routes/userRoutes");
 const routes = require("./Routes/routes.js");
 const mongoose = require("mongoose");
 const path = require("path");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 app.use(cors());
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static("public"));
